@@ -1,0 +1,70 @@
+.sw-desktop__content {
+  height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.clever-reach-dashboard-img {
+  width: 40%;
+  height: 10%;
+}
+
+.clever-reach-dashboard {
+  width: 60%;
+  height: 90%;
+  border: 1px black solid;
+  padding: 15px;
+  position: relative;
+}
+
+.clever-reach-dashboard-child {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  padding: 20px;
+  margin: auto;
+  text-align: center;
+  font-size: 30px;
+}
+
+.clever-reach-dashboard-content {
+  text-align: center;
+  margin: auto;
+  font-size: 30px;
+}
+
+.clever-reach-dashboard-button {
+  background-color: #ff5e19;
+  color: white;
+  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  font-size: large;
+  text-decoration: none;
+  text-align: center;
+}
+
+.clever-reach-dashboard-button-div {
+  width: 50%;
+  height: 16%;
+  margin: auto auto 0;
+}
+
+.clever-reach-dashboard-span {
+  font-size: 30px;
+  float: right;
+}
+
+.clever-reach-dashboard-green {
+  color: green;
+}
+
+.clever-reach-dashboard-red {
+  color: red;
+}
+
+.clever-reach-dashboard-orange {
+  color: orange;
+}

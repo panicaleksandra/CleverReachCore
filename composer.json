@@ -1,0 +1,41 @@
+{
+  "name": "aleksandra/cleverrecah_core_plugin",
+  "version": "1.0.0",
+  "description": "CleverReachCore plugin",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "panicaleksandra",
+      "email": "aleksandra.panic@logeecom.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "ext-curl": "*",
+    "cleverreach/integration-core": "3.4.4",
+
+  },
+  "autoload": {
+    "psr-4": {
+      "CleverReachCore\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "CleverReachCore\\CleverReachCore",
+    "label": {
+      "de-DE": "CleverReachCore plugin",
+      "en-GB": "CleverReachCore plugin"
+    }
+  },
+  "repositories": [
+    {
+
+    },
+    {
+      "type": "vcs",
+      "no-api": true,
+      "url": "git@github.com:cleverreach/logeecore.git"
+    }
+  ]
+}

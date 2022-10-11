@@ -1,0 +1,4 @@
+{% block clever_reach_index %}
+    <clever-reach-landing v-if="this.$route.params.page==='landing'"/>
+    <clever-reach-dashboard v-else-if="this.$route.params.page==='dashboard'"/>
+{% endblock %}

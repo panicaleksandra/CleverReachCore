@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="1a913d84-2406-455a-8c03-1d81881cdbb4" name="test" url="http://localhost">
+        <fileTransfer mountedRoot="$PROJECT_DIR$/../../systems/shopware/6-4-dev/custom/plugins/CleverReachCore" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>

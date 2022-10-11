@@ -1,0 +1,22 @@
+{% block clever_reach_dashboard %}
+    <div class="clever-reach-dashboard" xmlns="http://www.w3.org/1999/html">
+        <div>
+            <img :src="'/cleverreachshopware6/administration/img/clever_reach_logo.jpg' | asset"
+                 class="clever-reach-dashboard-img">
+            <span class="clever-reach-dashboard-span">Client Id: {{ clientId }}</span>
+        </div>
+        <div class="clever-reach-dashboard-child">
+            <div>
+                Sync Status: <br><br><br><br>
+                <span :class="(syncStatus === 'In progress') ? 'clever-reach-dashboard-orange' :
+                                ((syncStatus === 'Done') ? 'clever-reach-dashboard-green' : 'clever-reach-dashboard-red')">
+                    {{ syncStatus }}
+                </span>
+            </div>
+            <div class="clever-reach-dashboard-button-div">
+                <button class="clever-reach-dashboard-button" id="manual-sync-button">Synchronize</button>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
