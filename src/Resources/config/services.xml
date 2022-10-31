@@ -2,14 +2,176 @@
 
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xsi:schemaLocation=
+                   "http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <!--        CONTROLLERS        -->
         <service id="CleverReachCore\Controller\API\Backend\RouterController"
+                 class="CleverReachCore\Controller\API\Backend\RouterController"
                  public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+        <service id="CleverReachCore\Controller\API\Frontend\AuthController"
+                 class="CleverReachCore\Controller\API\Frontend\AuthController"
+                 public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <argument type="service" id="CleverReachCore\Utility\Initializer"/>
+            <argument type="service" id="CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService"/>
+        </service>
+        <service id="CleverReachCore\Controller\API\Backend\LandingController"
+                 class="CleverReachCore\Controller\API\Backend\LandingController"
+                 public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service id="CleverReachCore\Controller\API\Backend\StatusController"
+                 class="CleverReachCore\Controller\API\Backend\StatusController"
+                 public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <argument type="service" id="CleverReachCore\Utility\Initializer"/>
+        </service>
+        <service id="CleverReachCore\Controller\API\Frontend\AsyncProcessController"
+                 class="CleverReachCore\Controller\API\Frontend\AsyncProcessController"
+                 public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <argument type="service" id="CleverReachCore\Utility\Initializer"/>
+        </service>
+        <service id="CleverReachCore\Controller\API\Backend\SyncInformationController"
+                 class="CleverReachCore\Controller\API\Backend\SyncInformationController"
+                 public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <argument type="service" id="CleverReachCore\Utility\Initializer"/>
+            <argument type="service" id="CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService"/>
+        </service>
+        <service id="CleverReachCore\Controller\API\Frontend\WebhookController"
+                 class="CleverReachCore\Controller\API\Frontend\WebhookController"
+                 public="true">
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <argument type="service" id="CleverReachCore\Utility\Initializer"/>
+        </service>
+
+        <!--        SERVICES        -->
+        <service id="CleverReachCore\Business\Service\ConfigService"
+                 class="CleverReachCore\Business\Service\ConfigService"
+                 public="true">
+        </service>
+        <service id="CleverReachCore\Core\Infrastructure\Logger\Interfaces\ShopLoggerAdapter"
+                 class="CleverReachCore\Infrastructure\Service\LoggerService"
+                 public="true">
+            <argument type="service" id="kernel"/>
+        </service>
+        <service id="CleverReachCore\Utility\Initializer"
+                 class="CleverReachCore\Utility\Initializer"
+                 public="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="cleverreach_entity.repository"/>
+            <argument type="service" id="CleverReachCore\Core\Infrastructure\Logger\Interfaces\ShopLoggerAdapter"/>
+            <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
+            <argument type="service" id="CleverReachCore\Business\Service\ReceiverService"/>
+            <argument type="service" id="CleverReachCore\Business\Service\WebhookService"/>
+        </service>
+        <service id="CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService"
+                 class="CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService"
+                 public="true">
+        </service>
+        <service id="CleverReachCore\Business\Service\ReceiverService"
+                 class="CleverReachCore\Business\Service\ReceiverService"
+                 public="true">
+            <argument type="service" id="CleverReachCore\Business\Repository\CustomerRepositoryInterface"/>
+        </service>
+        <service id="CleverReachCore\Business\Service\WebhookService"
+                 class="CleverReachCore\Business\Service\WebhookService"
+                 public="true">
+            <argument type="service" id="CleverReachCore\Business\Repository\CustomerRepositoryInterface"/>
+            <argument type="service" id="CleverReachCore\DataAccess\SalutationRepository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\LanguageRepository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\SalesChannelRepository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\CountryRepository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\CountryStateRepository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\CustomerGroupRepository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\PaymentMethodRepository"/>
+        </service>
+
+        <!--        REPOSITORIES        -->
+        <service id="CleverReachCore\Business\Entity\BaseEntityDefinition"
+                 class="CleverReachCore\Business\Entity\BaseEntityDefinition"
+                 public="true">
+            <tag name="shopware.entity.definition"
+                 entity="cleverreach_entity"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\BaseRepository"
+                 class="CleverReachCore\DataAccess\BaseRepository"
+                 public="true">
+        </service>
+        <service id="CleverReachCore\DataAccess\CustomerRepository"
+                 class="CleverReachCore\DataAccess\CustomerRepository"
+                 public="true">
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="CleverReachCore\DataAccess\SalutationRepository"/>
+        </service>
+        <service id="CleverReachCore\Business\Repository\CustomerRepositoryInterface"
+                 class="CleverReachCore\DataAccess\CustomerRepository"
+                 public="true">
+            <argument type="service" id="customer.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\SalutationRepository"
+                 class="CleverReachCore\DataAccess\SalutationRepository"
+                 public="true">
+            <argument type="service" id="salutation.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\LanguageRepository"
+                 class="CleverReachCore\DataAccess\LanguageRepository"
+                 public="true">
+            <argument type="service" id="language.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\SalesChannelRepository"
+                 class="CleverReachCore\DataAccess\SalesChannelRepository"
+                 public="true">
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\CountryStateRepository"
+                 class="CleverReachCore\DataAccess\CountryStateRepository"
+                 public="true">
+            <argument type="service" id="country_state.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\CountryRepository"
+                 class="CleverReachCore\DataAccess\CountryRepository"
+                 public="true">
+            <argument type="service" id="country.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\CustomerGroupRepository"
+                 class="CleverReachCore\DataAccess\CustomerGroupRepository"
+                 public="true">
+            <argument type="service" id="customer_group.repository"/>
+        </service>
+        <service id="CleverReachCore\DataAccess\PaymentMethodRepository"
+                 class="CleverReachCore\DataAccess\PaymentMethodRepository"
+                 public="true">
+            <argument type="service" id="payment_method.repository"/>
+        </service>
+
+        <!--        SUBSCRIBERS        -->
+        <service id="CleverReachCore\Subscriber\CustomerSubscriber"
+                 class="CleverReachCore\Subscriber\CustomerSubscriber"
+                 public="true">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService"/>
+            <argument type="service" id="CleverReachCore\Utility\Initializer"/>
+            <argument type="service" id="CleverReachCore\Business\Repository\CustomerRepositoryInterface"/>
         </service>
     </services>
 </container>

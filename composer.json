@@ -11,10 +11,10 @@
     }
   ],
   "require": {
-    "php": ">=8.1",
+    "php": ">=7.4",
     "ext-curl": "*",
     "cleverreach/integration-core": "3.4.4",
-
+    "ext-http": "*"
   },
   "autoload": {
     "psr-4": {
@@ -30,12 +30,13 @@
   },
   "repositories": [
     {
-
-    },
-    {
       "type": "vcs",
       "no-api": true,
       "url": "git@github.com:cleverreach/logeecore.git"
     }
-  ]
+  ],
+  "scripts": {
+    "post-install-cmd": "CleverReachCore\\Script\\Core::postUpdate",
+    "post-update-cmd": "CleverReachCore\\Script\\Core::postUpdate"
+  }
 }
