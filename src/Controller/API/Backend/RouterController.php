@@ -2,8 +2,6 @@
 
 namespace CleverReachCore\Controller\API\Backend;
 
-use CleverReachCore\Core\BusinessLogic\Authorization\Tasks\Composite\ConnectTask;
-use CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService;
 use CleverReachCore\Core\Infrastructure\Logger\Logger;
 use CleverReachCore\Core\Infrastructure\ServiceRegister;
 use CleverReachCore\Utility\Initializer;
