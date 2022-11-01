@@ -2,13 +2,11 @@
 
 namespace CleverReachCore\Controller\API\Backend;
 
-use CleverReachCore\Core\Infrastructure\Logger\Logger;
+use CleverReachCore\Business\Service\RouterService;
 use CleverReachCore\Core\Infrastructure\ServiceRegister;
 use CleverReachCore\Utility\Initializer;
 use Shopware\Core\Framework\Api\Response\JsonApiResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Exception;
-use CleverReachCore\Core\BusinessLogic\Authorization\Contracts\AuthorizationService as BaseAuthorizationService;
 use Symfony\Component\Routing\Annotation\Route;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 
@@ -29,7 +27,8 @@ class RouterController extends AbstractController
      *
      * @param Initializer $initializer
      */
-    public function __construct(Initializer $initializer) {
+    public function __construct(Initializer $initializer)
+    {
         $this->initializer = $initializer;
     }
 
@@ -56,26 +55,9 @@ class RouterController extends AbstractController
      */
     private function getPage(): string
     {
-        return $this->isAuthorized() ? self::DASHBOARD_STATE_CODE : self::LANDING_STATE_CODE;
-    }
+        /** @var RouterService $routerService */
+        $routerService = ServiceRegister::getService(RouterService::class);
 
-    /**
-     * Check if user is authorized with CleverReach.
-     *
-     * @return bool
-     */
-    private function isAuthorized(): bool
-    {
-        $result = true;
-
-        try {
-            (ServiceRegister::getService(BaseAuthorizationService::class))->getAuthInfo();
-        } catch (Exception $e) {
-            $result = false;
-
-            Logger::logInfo($e->getMessage());
-        }
-
-        return $result;
+        return $routerService->isAuthorized() ? self::DASHBOARD_STATE_CODE : self::LANDING_STATE_CODE;
     }
 }

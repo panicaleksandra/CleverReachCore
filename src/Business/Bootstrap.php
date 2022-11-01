@@ -10,6 +10,7 @@ use CleverReachCore\Business\Service\GroupService;
 use CleverReachCore\Business\Service\ReceiverEventsService;
 use CleverReachCore\Business\Service\ReceiverFieldService;
 use CleverReachCore\Business\Service\ReceiverSyncService;
+use CleverReachCore\Business\Service\RouterService;
 use CleverReachCore\Business\Service\SegmentService;
 use CleverReachCore\Business\Service\SyncConfigService;
 use CleverReachCore\Business\Service\SyncSettingsService;
@@ -137,6 +138,12 @@ class Bootstrap extends BootstrapComponent
             BaseReceiverEventsService::class,
             static function() {
                 return new ReceiverEventsService();
+            }
+        );
+        ServiceRegister::registerService(
+            RouterService::class,
+            static function() {
+                return new RouterService();
             }
         );
     }
