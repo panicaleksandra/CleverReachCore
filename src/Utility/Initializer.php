@@ -2,6 +2,7 @@
 
 namespace CleverReachCore\Utility;
 
+use CleverReachCore\Business\Bootstrap;
 use CleverReachCore\Business\Service\ReceiverService;
 use CleverReachCore\Business\Service\WebhookService;
 use CleverReachCore\Core\Infrastructure\Logger\Interfaces\ShopLoggerAdapter;
@@ -10,6 +11,7 @@ use CleverReachCore\Infrastructure\Service\LoggerService;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 
 /**
  * class Initializer
@@ -24,6 +26,7 @@ class Initializer
     private UrlGeneratorInterface $urlGenerator;
     private ReceiverService $receiverService;
     private WebhookService $webhookService;
+    private RequestContext $requestContext;
 
     /**
      * @param Connection $connection
@@ -32,6 +35,7 @@ class Initializer
      * @param UrlGeneratorInterface $urlGenerator
      * @param ReceiverService $receiverService
      * @param WebhookService $webhookService
+     * @param RequestContext $requestContext
      */
     public function __construct(
         Connection $connection,
@@ -39,7 +43,8 @@ class Initializer
         LoggerService $loggerService,
         UrlGeneratorInterface $urlGenerator,
         ReceiverService $receiverService,
-        WebhookService $webhookService
+        WebhookService $webhookService,
+        RequestContext $requestContext
     ) {
         $this->connection = $connection;
         $this->entityRepository = $entityRepository;
@@ -47,14 +52,23 @@ class Initializer
         $this->urlGenerator = $urlGenerator;
         $this->receiverService = $receiverService;
         $this->webhookService = $webhookService;
+        $this->requestContext = $requestContext;
     }
 
     /**
-     * Registers services.
+     * Initializes components.
      *
      * @return void
      */
-    public function registerServices(): void
+    public function init(): void {
+        Bootstrap::init();
+        $this->registerServices();
+    }
+
+    /**
+     * @return void
+     */
+    private function registerServices(): void
     {
         ServiceRegister::registerService(
             Connection::class,
@@ -90,6 +104,12 @@ class Initializer
             WebhookService::class,
             function() {
                 return $this->webhookService;
+            }
+        );
+        ServiceRegister::registerService(
+            RequestContext::class,
+            function() {
+                return $this->requestContext;
             }
         );
     }

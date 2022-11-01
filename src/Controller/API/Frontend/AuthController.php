@@ -2,10 +2,8 @@
 
 namespace CleverReachCore\Controller\API\Frontend;
 
-use CleverReachCore\Business\Bootstrap;
 use CleverReachCore\Business\Service\AuthorizationService;
 use CleverReachCore\Core\BusinessLogic\Authorization\Contracts\AuthorizationService as BaseAuthorizationService;
-use CleverReachCore\Core\BusinessLogic\Authorization\Http\AuthProxy;
 use CleverReachCore\Core\BusinessLogic\Authorization\Tasks\Composite\ConnectTask;
 use CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService;
 use CleverReachCore\Core\Infrastructure\Configuration\Configuration;
@@ -39,8 +37,7 @@ class AuthController extends AbstractController
      */
     public function __construct(
         Initializer $initializer,
-        QueueService $queueService
-    ) {
+        QueueService $queueService) {
         $this->initializer = $initializer;
         $this->queueService = $queueService;
     }
@@ -60,8 +57,7 @@ class AuthController extends AbstractController
     public function handle(Request $request): JsonApiResponse
     {
         try {
-            Bootstrap::init();
-            $this->initializer->registerServices();
+            $this->initializer->init();
 
             $code = $request->query->get('code');
 
@@ -69,14 +65,10 @@ class AuthController extends AbstractController
                 throw new HttpException('Code not set.', 400);
             }
 
-            /** @var AuthProxy $authProxy */
-            $authProxy = ServiceRegister::getService(AuthProxy::class);
-            /** @var AuthorizationService $authService */
-            $authService = ServiceRegister::getService(BaseAuthorizationService::class);
-            $authInfo = $authProxy->getAuthInfo($code, $authService->getRedirectURL());
-            $authService->setAuthInfo($authInfo);
-            $configService = ServiceRegister::getService(Configuration::class);
+            $authService = $this->getAuthService();
+            $authService->authorize($code);
 
+            $configService = ServiceRegister::getService(Configuration::class);
             $this->queueService->enqueue($configService->getDefaultQueueName(), new ConnectTask());
             $this->queueService->enqueue($configService->getDefaultQueueName(), new InitialSyncTask());
 
@@ -86,5 +78,16 @@ class AuthController extends AbstractController
 
             return new JsonApiResponse(['success' => false], 400);
         }
+    }
+
+    /**
+     * @return AuthorizationService
+     */
+    private function getAuthService(): AuthorizationService
+    {
+        /** @var AuthorizationService $authService */
+        $authService = ServiceRegister::getService(BaseAuthorizationService::class);
+
+        return $authService;
     }
 }

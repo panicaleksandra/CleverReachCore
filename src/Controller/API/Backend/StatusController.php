@@ -2,7 +2,6 @@
 
 namespace CleverReachCore\Controller\API\Backend;
 
-use CleverReachCore\Business\Bootstrap;
 use CleverReachCore\Business\Service\AuthorizationService;
 use CleverReachCore\Core\BusinessLogic\Authorization\Contracts\AuthorizationService as BaseAuthorizationService;
 use CleverReachCore\Core\Infrastructure\Logger\Logger;
@@ -45,8 +44,7 @@ class StatusController extends AbstractController
     public function handle(): JsonApiResponse
     {
         try {
-            Bootstrap::init();
-            $this->initializer->registerServices();
+            $this->initializer->init();
 
             /** @var AuthorizationService $authService */
             $authService = ServiceRegister::getService(BaseAuthorizationService::class);

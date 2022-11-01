@@ -3,6 +3,9 @@
 namespace CleverReachCore\Business\Service;
 
 use CleverReachCore\Core\BusinessLogic\Configuration\Configuration;
+use CleverReachCore\Core\Infrastructure\ServiceRegister;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 
 /**
  * Class ConfigService
@@ -16,6 +19,7 @@ class ConfigService extends Configuration
     public const CLIENT_SECRET = 'xUWd13GnxnXHmKy6dL1qvpvqBgpEdDKK';
     public const DEFAULT_QUEUE_NAME = 'Shopware 6 - Default';
     public const MIN_LOG_LEVEL = 2;
+    public const ASYNC_PROCESS_ROUTE_NAME = 'storefront.async';
 
     /**
      * Retrieves client secret of the integration.
@@ -44,7 +48,10 @@ class ConfigService extends Configuration
      */
     public function getSystemUrl(): string
     {
-        return 'http://6-4-dev.shopware.localhost';
+        /** @var RequestContext $requestContext */
+        $requestContext = ServiceRegister::getService(RequestContext::class);
+
+        return $requestContext->getBaseUrl();
     }
 
     /**
@@ -56,7 +63,11 @@ class ConfigService extends Configuration
      */
     public function getAsyncProcessUrl($guid): string
     {
-        return 'http://6-4-dev.shopware.localhost/storefront/async/' . $guid;
+        return $this->getUrlGenerator()->generate(
+          self::ASYNC_PROCESS_ROUTE_NAME,
+          ['guid' => $guid],
+          UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 
     /**
@@ -77,5 +88,16 @@ class ConfigService extends Configuration
     public function getIntegrationName(): string
     {
         return self::INTEGRATION_NAME;
+    }
+
+    /**
+     * @return UrlGeneratorInterface
+     */
+    private function getUrlGenerator(): UrlGeneratorInterface
+    {
+        /** @var UrlGeneratorInterface $urlGenerator */
+        $urlGenerator = ServiceRegister::getService(UrlGeneratorInterface::class);
+
+        return $urlGenerator;
     }
 }

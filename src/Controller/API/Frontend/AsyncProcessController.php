@@ -2,7 +2,6 @@
 
 namespace CleverReachCore\Controller\API\Frontend;
 
-use CleverReachCore\Business\Bootstrap;
 use CleverReachCore\Core\Infrastructure\ServiceRegister;
 use CleverReachCore\Core\Infrastructure\TaskExecution\Interfaces\AsyncProcessService;
 use CleverReachCore\Utility\Initializer;
@@ -44,8 +43,7 @@ class AsyncProcessController extends AbstractController
      */
     public function run(string $guid): JsonResponse
     {
-        Bootstrap::init();
-        $this->initializer->registerServices();
+        $this->initializer->init();
 
         /** @var AsyncProcessService $asyncProcessService */
         $asyncProcessService = ServiceRegister::getService(AsyncProcessService::class);

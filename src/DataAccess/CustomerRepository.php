@@ -2,7 +2,6 @@
 
 namespace CleverReachCore\DataAccess;
 
-use CleverReachCore\Business\Repository\CustomerRepositoryInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -16,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
  *
  * @package CleverReachCore\DataAccess
  */
-class CustomerRepository implements CustomerRepositoryInterface
+class CustomerRepository
 {
     private EntityRepositoryInterface $customerRepository;
 
@@ -41,6 +40,22 @@ class CustomerRepository implements CustomerRepositoryInterface
             ->addAssociations($this->getCustomerAssociationsArray());
 
         return $this->customerRepository->search($criteria, Context::createDefaultContext())->count();
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getCustomerAssociationsArray(): array
+    {
+        return [
+            'language',
+            'salutation',
+            'salesChannel',
+            'salesChannel.domains',
+            'defaultShippingAddress',
+            'defaultShippingAddress.country',
+            'defaultShippingAddress.countryState',
+        ];
     }
 
     /**
@@ -103,6 +118,23 @@ class CustomerRepository implements CustomerRepositoryInterface
     }
 
     /**
+     * @param EntityCollection $collection
+     *
+     * @return array
+     */
+    private function getEmailsFromEntityCollection(EntityCollection $collection): array
+    {
+        $emails = [];
+
+        foreach ($collection as $item) {
+            /**@var CustomerEntity $item */
+            $emails[] = $item->getEmail();
+        }
+
+        return $emails;
+    }
+
+    /**
      * Creates customer.
      *
      * @param array $data
@@ -140,38 +172,5 @@ class CustomerRepository implements CustomerRepositoryInterface
             ->addAssociations($this->getCustomerAssociationsArray());
 
         return $this->customerRepository->search($criteria, Context::createDefaultContext())->first();
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getCustomerAssociationsArray(): array
-    {
-        return [
-            'language',
-            'salutation',
-            'salesChannel',
-            'salesChannel.domains',
-            'defaultShippingAddress',
-            'defaultShippingAddress.country',
-            'defaultShippingAddress.countryState',
-        ];
-    }
-
-    /**
-     * @param EntityCollection $collection
-     *
-     * @return array
-     */
-    private function getEmailsFromEntityCollection(EntityCollection $collection): array
-    {
-        $emails = [];
-
-        foreach ($collection as $item) {
-            /**@var CustomerEntity $item */
-            $emails[] = $item->getEmail();
-        }
-
-        return $emails;
     }
 }

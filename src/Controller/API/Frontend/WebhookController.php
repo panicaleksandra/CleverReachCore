@@ -2,10 +2,7 @@
 
 namespace CleverReachCore\Controller\API\Frontend;
 
-use CleverReachCore\Business\Bootstrap;
-use CleverReachCore\Business\Service\ReceiverEventsService;
 use CleverReachCore\Business\Service\WebhookService;
-use CleverReachCore\Core\BusinessLogic\Receiver\ReceiverEventsService as BaseReceiverEventsService;
 use CleverReachCore\Core\Infrastructure\ServiceRegister;
 use CleverReachCore\Utility\Initializer;
 use Exception;
@@ -49,32 +46,33 @@ class WebhookController extends AbstractController
     public function handle(Request $request): Response
     {
         try {
-            Bootstrap::init();
-            $this->initializer->registerServices();
+            $this->initializer->init();
+
+            $webhookService = $this->getWebhookService();
 
             if ($request->getMethod() === 'GET') {
                 $secret = $request->query->get('secret');
-                /** @var ReceiverEventsService $receiverEventsService */
-                $receiverEventsService = ServiceRegister::getService(BaseReceiverEventsService::class);
-                $verificationToken = $receiverEventsService->getVerificationToken();
 
-                return new Response($verificationToken . ' ' . $secret);
+                return new Response($webhookService->getVerificationToken() . ' ' . $secret);
             }
 
             $requestBody = json_decode($request->getContent(), true);
-
-            if ($requestBody['event'] !== 'receiver.created' &&
-                $requestBody['event'] !== 'receiver.updated') {
-                return new Response();
-            }
-
-            /** @var WebhookService $webhookService */
-            $webhookService = ServiceRegister::getService(WebhookService::class);
             $webhookService->handleUpsertReceiver($requestBody);
 
             return new Response();
         } catch (Exception $exception) {
             return new Response($exception->getMessage(), 500);
         }
+    }
+
+    /**
+     * @return WebhookService
+     */
+    private function getWebhookService(): WebhookService
+    {
+        /** @var WebhookService $webhookService */
+        $webhookService = ServiceRegister::getService(WebhookService::class);
+
+        return $webhookService;
     }
 }

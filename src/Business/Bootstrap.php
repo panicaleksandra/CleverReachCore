@@ -2,7 +2,6 @@
 
 namespace CleverReachCore\Business;
 
-use CleverReachCore\Business\Repository\QueueItemRepository;
 use CleverReachCore\Business\Service\AuthorizationService;
 use CleverReachCore\Business\Service\ConfigService;
 use CleverReachCore\Business\Service\DefaultMailingService;
@@ -38,6 +37,7 @@ use CleverReachCore\Core\Infrastructure\ServiceRegister;
 use CleverReachCore\Core\Infrastructure\TaskExecution\Process;
 use CleverReachCore\Core\Infrastructure\TaskExecution\QueueItem;
 use CleverReachCore\DataAccess\BaseRepository;
+use CleverReachCore\DataAccess\QueueItemRepository;
 
 /**
  * Class Bootstrap

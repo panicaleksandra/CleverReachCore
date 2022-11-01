@@ -11,7 +11,7 @@ use CleverReachCore\Core\BusinessLogic\Receiver\ReceiverEventsService as BaseRec
  */
 class ReceiverEventsService extends BaseReceiverEventsService
 {
-    private const WEBHOOK_ENDPOINT = 'https://610c-178-222-249-248.eu.ngrok.io/api/cleverreach/webhook';
+    private const WEBHOOK_ENDPOINT = 'https://29de-178-222-249-248.eu.ngrok.io/api/cleverreach/webhook';
 
     /**
      * Provides url that will listen to web hook requests.

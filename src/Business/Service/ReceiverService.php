@@ -2,7 +2,7 @@
 
 namespace CleverReachCore\Business\Service;
 
-use CleverReachCore\Business\Repository\CustomerRepositoryInterface;
+use CleverReachCore\DataAccess\CustomerRepository;
 use CleverReachCore\Core\BusinessLogic\Receiver\DTO\Receiver;
 use CleverReachCore\Core\BusinessLogic\Receiver\DTO\Tag\Tag;
 use CleverReachCore\Core\BusinessLogic\Receiver\ReceiverService as BaseReceiverService;
@@ -18,18 +18,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
  */
 class ReceiverService extends BaseReceiverService
 {
-    public const TAG = 'Tag';
-    public const STORE = 'SalesChannel';
-    public const GROUP = 'CustomerGroup';
-
-    private CustomerRepositoryInterface $baseRepository;
+    private CustomerRepository $baseRepository;
 
     /**
      * Creates receiver service.
      *
-     * @param CustomerRepositoryInterface $baseRepository
+     * @param CustomerRepository $baseRepository
      */
-    public function __construct(CustomerRepositoryInterface $baseRepository)
+    public function __construct(CustomerRepository $baseRepository)
     {
         parent::__construct();
 

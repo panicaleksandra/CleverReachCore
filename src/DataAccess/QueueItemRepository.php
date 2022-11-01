@@ -1,6 +1,6 @@
 <?php
 
-namespace CleverReachCore\Business\Repository;
+namespace CleverReachCore\DataAccess;
 
 use CleverReachCore\Core\Infrastructure\ORM\Exceptions\QueryFilterInvalidParamException;
 use CleverReachCore\Core\Infrastructure\ORM\Interfaces\QueueItemRepository as BaseQueueItemRepository;
@@ -9,13 +9,12 @@ use CleverReachCore\Core\Infrastructure\ORM\QueryFilter\QueryFilter;
 use CleverReachCore\Core\Infrastructure\ORM\Utility\IndexHelper;
 use CleverReachCore\Core\Infrastructure\TaskExecution\Exceptions\QueueItemSaveException;
 use CleverReachCore\Core\Infrastructure\TaskExecution\QueueItem;
-use CleverReachCore\DataAccess\BaseRepository;
 use JsonException;
 
 /**
  * Class QueueItemRepository
  *
- * @package CleverReachCore\Business\Repository
+ * @package CleverReachCore\DataAccess
  */
 class QueueItemRepository extends BaseRepository implements BaseQueueItemRepository
 {

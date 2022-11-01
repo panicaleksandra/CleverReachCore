@@ -2,7 +2,8 @@
 
 namespace CleverReachCore\Business\Service;
 
-use CleverReachCore\Business\Repository\CustomerRepositoryInterface;
+use CleverReachCore\Core\BusinessLogic\Receiver\ReceiverEventsService as BaseReceiverEventsService;
+use CleverReachCore\DataAccess\CustomerRepository;
 use CleverReachCore\Core\BusinessLogic\Receiver\DTO\Receiver;
 use CleverReachCore\Core\BusinessLogic\Receiver\Http\Proxy;
 use CleverReachCore\Core\Infrastructure\ServiceRegister;
@@ -31,7 +32,7 @@ use Shopware\Core\System\Salutation\SalutationEntity;
  */
 class WebhookService
 {
-    private CustomerRepositoryInterface $baseRepository;
+    private CustomerRepository $baseRepository;
     private SalutationRepository $salutationRepository;
     private LanguageRepository $languageRepository;
     private SalesChannelRepository $salesChannelRepository;
@@ -43,7 +44,7 @@ class WebhookService
     /**
      * Creates ReceiverService.
      *
-     * @param CustomerRepositoryInterface $baseRepository
+     * @param CustomerRepository $baseRepository
      * @param SalutationRepository $salutationRepository
      * @param LanguageRepository $languageRepository
      * @param SalesChannelRepository $salesChannelRepository
@@ -53,7 +54,7 @@ class WebhookService
      * @param PaymentMethodRepository $paymentMethodRepository
      */
     public function __construct(
-        CustomerRepositoryInterface $baseRepository,
+        CustomerRepository $baseRepository,
         SalutationRepository $salutationRepository,
         LanguageRepository $languageRepository,
         SalesChannelRepository $salesChannelRepository,
@@ -73,6 +74,19 @@ class WebhookService
     }
 
     /**
+     * Returns verification token.
+     *
+     * @return string
+     */
+    public function getVerificationToken(): string
+    {
+        /** @var ReceiverEventsService $receiverEventsService */
+        $receiverEventsService = ServiceRegister::getService(BaseReceiverEventsService::class);
+
+        return $receiverEventsService->getVerificationToken();
+    }
+
+    /**
      * Handles upsert receiver event.
      *
      * @param array $requestBody
@@ -82,14 +96,17 @@ class WebhookService
      */
     public function handleUpsertReceiver(array $requestBody): void
     {
+        if ($requestBody['event'] !== 'receiver.created' &&
+            $requestBody['event'] !== 'receiver.updated') {
+            throw new Exception('Wrong event.');
+        }
+
         /** @var Proxy $proxy */
         $proxy = ServiceRegister::getService(Proxy::CLASS_NAME);
         $receiver = $proxy->getReceiver($requestBody['condition'], ($requestBody['payload'])['pool_id']);
         $data = $this->toArray($receiver);
 
-        $requestBody['event'] === 'receiver.updated' ?
-            $this->update($data) :
-            $this->create($data);
+        $requestBody['event'] === 'receiver.updated' ? $this->update($data) : $this->create($data);
     }
 
     /**

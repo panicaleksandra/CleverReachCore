@@ -2,16 +2,12 @@
 
 namespace CleverReachCore\Controller\API\Backend;
 
-use CleverReachCore\Business\Bootstrap;
-use CleverReachCore\Business\Service\AuthorizationService;
-use CleverReachCore\Core\BusinessLogic\Authorization\Contracts\AuthorizationService as BaseAuthorizationService;
+use CleverReachCore\Business\Service\SyncStatusService;
 use CleverReachCore\Core\BusinessLogic\SecondarySynchronization\Tasks\Composite\SecondarySyncTask;
 use CleverReachCore\Core\BusinessLogic\TaskExecution\QueueService;
 use CleverReachCore\Core\Infrastructure\Configuration\Configuration;
 use CleverReachCore\Core\Infrastructure\Logger\Logger;
 use CleverReachCore\Core\Infrastructure\ServiceRegister;
-use CleverReachCore\Core\Infrastructure\TaskExecution\QueueItem;
-use CleverReachCore\Task\InitialSync\InitialSyncTask;
 use CleverReachCore\Utility\Initializer;
 use Exception;
 use Shopware\Core\Framework\Api\Response\JsonApiResponse;
@@ -28,19 +24,22 @@ class SyncInformationController extends AbstractController
 {
     private Initializer $initializer;
     private QueueService $queueService;
+    private SyncStatusService $syncStatusService;
 
     /**
      * Creates SyncInformationController.
      *
      * @param Initializer $initializer
      * @param QueueService $queueService
+     * @param SyncStatusService $syncStatusService
      */
     public function __construct(
         Initializer $initializer,
-        QueueService $queueService
-    ) {
+        QueueService $queueService,
+        SyncStatusService $syncStatusService) {
         $this->initializer = $initializer;
         $this->queueService = $queueService;
+        $this->syncStatusService = $syncStatusService;
     }
 
     /**
@@ -56,34 +55,11 @@ class SyncInformationController extends AbstractController
     function checkStatus(): JsonApiResponse
     {
         try {
-            Bootstrap::init();
-            $this->initializer->registerServices();
+            $this->initializer->init();
 
-            /** @var AuthorizationService $authService */
-            $authService = ServiceRegister::getService(BaseAuthorizationService::class);
-            $clientId = $authService->getUserInfo()->getId();
-
-            /** @var QueueItem $secondarySyncItem */
-            $secondarySyncItem = $this->queueService->findLatestByType(SecondarySyncTask::getClassName());
-
-            if ($secondarySyncItem) {
-                $syncStatus = $secondarySyncItem->getStatus() === 'queued' ?
-                    'In progress' : $secondarySyncItem->getStatus();
-
-                return new JsonApiResponse(['clientId' => $clientId ?? '', 'syncStatus' => $syncStatus]);
-            }
-
-            $initialSyncItem = $this->queueService->findLatestByType(InitialSyncTask::getClassName());
-            if ($initialSyncItem) {
-                $syncStatus = $initialSyncItem->getStatus() === 'queued' ?
-                    'In progress' : $initialSyncItem->getStatus();
-
-                return new JsonApiResponse(['clientId' => $clientId ?? '', 'syncStatus' => $syncStatus]);
-            }
-
-            $syncStatus = 'In progress';
-
-            return new JsonApiResponse(['clientId' => $clientId ?? '', 'syncStatus' => $syncStatus]);
+            return new JsonApiResponse([
+                'clientId' => $this->syncStatusService->getClientId(),
+                'syncStatus' => $this->syncStatusService->getSyncStatus()]);
         } catch (Exception $exception) {
             Logger::logError($exception->getMessage());
 
@@ -104,19 +80,14 @@ class SyncInformationController extends AbstractController
     function handleManualSync(): JsonApiResponse
     {
         try {
-            Bootstrap::init();
-            $this->initializer->registerServices();
-
-            /** @var AuthorizationService $authService */
-            $authService = ServiceRegister::getService(BaseAuthorizationService::class);
-            $clientId = $authService->getUserInfo()->getId();
+            $this->initializer->init();
 
             $configService = ServiceRegister::getService(Configuration::class);
             $this->queueService->enqueue($configService->getDefaultQueueName(), new SecondarySyncTask());
 
             return new JsonApiResponse([
-                'clientId' => $clientId,
-                'syncStatus' => 'In progress',
+                'clientId' => $this->syncStatusService->getClientId(),
+                'syncStatus' => SyncStatusService::SYNC_STATUS_IN_PROGRESS,
             ]);
         } catch (Exception $exception) {
             Logger::logError($exception->getMessage());
